@@ -1,6 +1,6 @@
 {
-  "name": "angular-i18next",
-  "version": "14.0.5-3",
+  "name": "mf-angular-i18next",
+  "version": "14.0.0",
   "publishConfig": {
     "access": "public"
   },
@@ -9,12 +9,12 @@
     "yolo": true
   },
   "author": {
-    "name": "Sergey Romanchuk"
+    "name": "Florian Rappl"
   },
-  "homepage": "https://github.com/Romanchuk/angular-i18next#readme",
+  "homepage": "https://github.com/FlorianRappl/mf-angular-i18next#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Romanchuk/angular-i18next.git"
+    "url": "git+https://github.com/FlorianRappl/mf-angular-i18next.git"
   },
   "license": "MIT",
   "description": "i18next module for Angular",
@@ -24,14 +24,8 @@
     "angular"
   ],
   "bugs": {
-    "url": "https://github.com/Romanchuk/angular-i18next/issues"
+    "url": "https://github.com/FlorianRappl/mf-angular-i18next/issues"
   },
-  "maintainers": [
-    {
-      "email": "rezety@gmail.com",
-      "name": "Sergey Romanchuk"
-    }
-  ],
   "scripts": {
     "tslint": "npm exec -- tslint",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
