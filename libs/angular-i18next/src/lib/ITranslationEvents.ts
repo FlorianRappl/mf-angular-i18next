@@ -5,7 +5,7 @@ export type MissingKeyEvent = { lngs: any; namespace: any; key: any; res: any };
 
 export interface ITranslationEvents {
   initialized: BehaviorSubject<any>;
-  loaded: BehaviorSubject<boolean>;
+  loaded: BehaviorSubject<{ [language: string]: readonly string[] }>;
   failedLoading: Subject<any>;
   missingKey: Subject<MissingKeyEvent>;
   added: Subject<ResourceEvent>;

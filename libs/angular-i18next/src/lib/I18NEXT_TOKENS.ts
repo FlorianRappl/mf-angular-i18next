@@ -9,6 +9,9 @@ export const I18NEXT_SCOPE = new InjectionToken<string | string[]>(
 export const I18NEXT_NAMESPACE = new InjectionToken<string | string[]>(
   'I18NEXT_NAMESPACE'
 );
+export const I18NEXT_INSTANCE = new InjectionToken<string>(
+  'I18NEXT_INSTANCE'
+);
 export const I18NEXT_SERVICE = new InjectionToken<ITranslationService>(
   'I18NEXT_SERVICE'
 );

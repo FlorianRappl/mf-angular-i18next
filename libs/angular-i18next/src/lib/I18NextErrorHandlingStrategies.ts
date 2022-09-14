@@ -1,11 +1,11 @@
-import { I18NextLoadResult } from './I18NextLoadResult';
-import * as i18n from 'i18next';
+import type { I18NextLoadResult } from './I18NextLoadResult';
+import type { Callback } from 'i18next';
 
 export interface I18NextErrorHandlingStrategy {
   handle(
     resolve: (thenableOrResult?: any) => void,
     reject: (error: any) => void
-  ): i18n.Callback;
+  ): Callback;
 }
 
 export class NativeErrorHandlingStrategy

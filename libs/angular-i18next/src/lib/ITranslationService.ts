@@ -1,84 +1,114 @@
-import * as i18n from 'i18next';
-import { I18NextLoadResult } from './I18NextLoadResult';
-import { ITranslationEvents } from './ITranslationEvents';
+import type {
+  InitOptions,
+  Callback,
+  Modules,
+  Module,
+  Services,
+  ResourceStore,
+  i18n,
+  TFunction,
+  Newable,
+  NewableModule,
+  FormatFunction,
+  ExistsFunction,
+} from 'i18next';
+import type { I18NextLoadResult } from './I18NextLoadResult';
+import type { ITranslationEvents } from './ITranslationEvents';
 
 type Modify<T, R> = Omit<T, keyof R> & R;
 
-export type ITranslationService = Modify<Partial<i18n.i18n>, {
+export type ITranslationService = Modify<
+  Partial<i18n>,
+  {
+    events: ITranslationEvents;
 
-  events: ITranslationEvents;
+    language: string;
+    languages: readonly string[];
+    options: InitOptions;
+    modules: Modules;
+    services: Services;
+    store: ResourceStore;
+    resolvedLanguage: string;
 
-  language: string;
-  languages: readonly string[];
-  options: i18n.InitOptions;
-  modules: i18n.Modules;
-  services: i18n.Services;
-  store: i18n.ResourceStore;
-  resolvedLanguage: string;
+    use<T extends Module>(
+      module: T | NewableModule<T> | Newable<T>
+    ): ITranslationService;
 
-  use<T extends i18n.Module>(
-    module:
-    T | i18n.NewableModule<T> | i18n.Newable<T>
-  ): ITranslationService;
+    init(options: InitOptions): Promise<I18NextLoadResult>;
 
-  init(options: i18n.InitOptions): Promise<I18NextLoadResult>;
+    change(instance: i18n): Promise<void>;
 
-  t: i18n.TFunction;
+    waitLoaded(): Promise<void>;
 
-  format: i18n.FormatFunction;
+    t: TFunction;
 
-  exists: i18n.ExistsFunction;
+    format: FormatFunction;
 
-  getFixedT(
-    lng: string | readonly string[],
-    ns?: string | readonly string[],
-    keyPrefix?: string,
-  ): i18n.TFunction;
-  getFixedT(lng: null, ns: string | readonly string[] | null, keyPrefix?: string): i18n.TFunction;
+    exists: ExistsFunction;
 
-  setDefaultNamespace(ns: string): void;
+    getFixedT(
+      lng: string | readonly string[],
+      ns?: string | readonly string[],
+      keyPrefix?: string
+    ): TFunction;
+    getFixedT(
+      lng: null,
+      ns: string | readonly string[] | null,
+      keyPrefix?: string
+    ): TFunction;
 
-  dir(lng: string): string;
+    setDefaultNamespace(ns: string): void;
 
-  changeLanguage(lng: string): Promise<any>;
+    dir(lng: string): string;
 
-  loadNamespaces(namespaces: string[]): Promise<any>;
-  loadLanguages(lngs: string | readonly string[], callback?: i18n.Callback): Promise<void>;
+    changeLanguage(lng: string): Promise<any>;
 
-  loadResources(callback?: (err: any) => void): void;
+    loadNamespaces(namespaces: string[]): Promise<any>;
+    loadLanguages(
+      lngs: string | readonly string[],
+      callback?: Callback
+    ): Promise<void>;
 
-  getDataByLanguage(lng: string): { translation: { [key: string]: string } } | undefined;
+    loadResources(callback?: (err: any) => void): void;
 
-  reloadResources(
-    lngs?: string | readonly string[],
-    ns?: string | readonly string[],
-    callback?: () => void,
-  ): Promise<void>;
-  reloadResources(lngs: null, ns: string | readonly string[], callback?: () => void): Promise<void>;
+    getDataByLanguage(
+      lng: string
+    ): { translation: { [key: string]: string } } | undefined;
 
-  getResource(
-    lng: string,
-    ns: string,
-    key: string,
-    options?: Pick<i18n.InitOptions, 'keySeparator' | 'ignoreJSONStructure'>,
-  ): any;
-  addResource(
-    lng: string,
-    ns: string,
-    key: string,
-    value: string,
-    options?: { keySeparator?: string; silent?: boolean },
-  ): i18n.i18n;
-  addResources(lng: string, ns: string, resources: any): i18n.i18n;
-  addResourceBundle(
-    lng: string,
-    ns: string,
-    resources: any,
-    deep?: boolean,
-    overwrite?: boolean,
-  ): i18n.i18n;
-  hasResourceBundle(lng: string, ns: string): boolean;
-  getResourceBundle(lng: string, ns: string): any;
-  removeResourceBundle(lng: string, ns: string): i18n.i18n;
+    reloadResources(
+      lngs?: string | readonly string[],
+      ns?: string | readonly string[],
+      callback?: () => void
+    ): Promise<void>;
+    reloadResources(
+      lngs: null,
+      ns: string | readonly string[],
+      callback?: () => void
+    ): Promise<void>;
 
-}>;
+    getResource(
+      lng: string,
+      ns: string,
+      key: string,
+      options?: Pick<InitOptions, 'keySeparator' | 'ignoreJSONStructure'>
+    ): any;
+    addResource(
+      lng: string,
+      ns: string,
+      key: string,
+      value: string,
+      options?: { keySeparator?: string; silent?: boolean }
+    ): i18n;
+    addResources(lng: string, ns: string, resources: any): i18n;
+    addResourceBundle(
+      lng: string,
+      ns: string,
+      resources: any,
+      deep?: boolean,
+      overwrite?: boolean
+    ): i18n;
+    hasResourceBundle(lng: string, ns: string): boolean;
+    getResourceBundle(lng: string, ns: string): any;
+    removeResourceBundle(lng: string, ns: string): i18n;
+  }
+>;

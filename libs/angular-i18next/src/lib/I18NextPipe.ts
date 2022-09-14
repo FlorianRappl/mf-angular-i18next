@@ -1,5 +1,5 @@
 import { Inject, Injectable, Pipe, PipeTransform } from '@angular/core';
-import * as i18n from 'i18next';
+import type { InitOptions } from 'i18next';
 
 import {
   I18NEXT_NAMESPACE,
@@ -22,7 +22,7 @@ export class I18NextPipe implements PipeTransform {
   public transform(key: string | string[], options?: PipeOptions): string {
     options = this.prepareOptions(options);
 
-    let i18nOpts: i18n.InitOptions = this.translateI18Next.options;
+    let i18nOpts: InitOptions = this.translateI18Next.options;
     if (options.prependScope === undefined || options.prependScope === true) {
       if (this.scope) {
         key = this.prependScope(

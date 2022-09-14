@@ -8,7 +8,7 @@ import {
 
 export class I18NextEvents implements ITranslationEvents {
   initialized = new BehaviorSubject(false);
-  loaded = new BehaviorSubject(false);
+  loaded = new BehaviorSubject({});
   failedLoading = new Subject();
   missingKey = new Subject<MissingKeyEvent>();
   added = new Subject<ResourceEvent>();

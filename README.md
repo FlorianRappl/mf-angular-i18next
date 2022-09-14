@@ -1,12 +1,40 @@
-[![npm version](https://badge.fury.io/js/angular-i18next.svg)](https://badge.fury.io/js/angular-i18next)
-[![Downloads](http://img.shields.io/npm/dm/angular-i18next.svg)](https://npmjs.org/package/angular-i18next)
-[![Build Status](https://travis-ci.com/Romanchuk/angular-i18next.svg?branch=master)](https://travis-ci.com/Romanchuk/angular-i18next)
-[![Coverage Status](https://coveralls.io/repos/github/Romanchuk/angular-i18next/badge.svg?branch=master)](https://coveralls.io/github/Romanchuk/angular-i18next?branch=master)
+[![npm version](https://badge.fury.io/js/mf-angular-i18next.svg)](https://badge.fury.io/js/mf-angular-i18next)
+[![Downloads](http://img.shields.io/npm/dm/mf-angular-i18next.svg)](https://npmjs.org/package/mf-angular-i18next)
+[![Coverage Status](https://coveralls.io/repos/github/FlorianRappl/mf-angular-i18next/badge.svg?branch=master)](https://coveralls.io/github/Romanchuk/mf-angular-i18next?branch=master)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![Dependency Status](https://david-dm.org/Romanchuk/angular-i18next.svg)](https://david-dm.org/Romanchuk/angular-i18next)
-[![devDependency Status](https://david-dm.org/Romanchuk/angular-i18next/dev-status.svg)](https://david-dm.org/Romanchuk/angular-i18next?type=dev)
-[![paypal](https://img.shields.io/badge/say_thanks-%2410-green)](https://www.paypal.com/paypalme2/sergeyromanchuk/10USD)
-[![GitHub stars](https://img.shields.io/github/stars/romanchuk/angular-i18next?label=Please%20star%20repo%21&style=social)](https://github.com/romanchuk/angular-i18next)
+
+# Fork of `angular-i18next` with Benefits
+
+This is a fork of `angular-i18next` that contains some additional functions:
+
+## Change used `i18next` instance
+
+You can change the instance by using the `change` method on the `ITranslationService`.
+
+This can be useful in your `appInit` function:
+
+```typescript
+export function appInit(i18next: ITranslationService) {
+  return () => i18next.change(myGlobalI18NextInstance);
+}
+```
+
+Alternatively, you can also inject an instance already avoiding the need for any `appInit` function:
+
+```typescript
+@NgModule({
+  // ...
+  providers: [
+    {
+      provide: I18NEXT_INSTANCE,
+      useFactory: () => myGlobalI18NextInstance,
+    },
+  ],
+})
+export class AppModule {}
+```
+
+One use case for this fork is to apply translations via `i18next` to microfrontends, which already come with a dedicated `i18next` instance (or even share an instance).
 
 # angular-i18next
 [i18next](http://i18next.com/) v8.4+ integration with [angular](https://angular.io/) v2.0+
