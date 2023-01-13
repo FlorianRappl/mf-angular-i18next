@@ -1,6 +1,6 @@
 {
   "name": "mf-angular-i18next",
-  "version": "14.0.0",
+  "version": "14.0.2",
   "publishConfig": {
     "access": "public"
   },

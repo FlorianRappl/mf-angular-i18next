@@ -1,7 +1,10 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Inject, Injectable, Optional, OnDestroy } from '@angular/core';
 import * as i18n from 'i18next';
 
-import { I18NEXT_ERROR_HANDLING_STRATEGY, I18NEXT_INSTANCE } from './I18NEXT_TOKENS';
+import {
+  I18NEXT_ERROR_HANDLING_STRATEGY,
+  I18NEXT_INSTANCE,
+} from './I18NEXT_TOKENS';
 import { I18NextErrorHandlingStrategy } from './I18NextErrorHandlingStrategies';
 import { I18NextEvents } from './I18NextEvents';
 import { I18NextLoadResult } from './I18NextLoadResult';
@@ -9,8 +12,9 @@ import { ITranslationEvents } from './ITranslationEvents';
 import { ITranslationService } from './ITranslationService';
 
 @Injectable()
-export class I18NextService implements ITranslationService {
+export class I18NextService implements ITranslationService, OnDestroy {
   private i18next: i18n.i18n;
+  private unsubscribe: () => void;
 
   events: ITranslationEvents = new I18NextEvents();
 
@@ -46,18 +50,22 @@ export class I18NextService implements ITranslationService {
   constructor(
     @Inject(I18NEXT_ERROR_HANDLING_STRATEGY)
     private errorHandlingStrategy: I18NextErrorHandlingStrategy,
-    @Optional() @Inject(I18NEXT_INSTANCE) private instance: i18n.i18n,
+    @Optional() @Inject(I18NEXT_INSTANCE) private instance: i18n.i18n
   ) {
     this.i18next = instance ?? i18n.default;
   }
 
   public change(instance: i18n.i18n) {
+    this.unsubscribeEvents();
+    this.instance = instance;
     this.i18next = instance;
-    return instance.init().then(() => {});
+    return this.waitLoaded();
   }
 
   public waitLoaded(): Promise<void> {
-    if (this.instance) {
+    this.subscribeEvents();
+
+    if (this.instance && !this.instance.isInitialized) {
       return this.instance.init().then(() => {});
     }
 
@@ -72,8 +80,6 @@ export class I18NextService implements ITranslationService {
   }
 
   init(options: i18n.InitOptions): Promise<I18NextLoadResult> {
-    this.subscribeEvents();
-
     return new Promise<I18NextLoadResult>((resolve, reject) => {
       this.i18next.init(
         Object.assign({}, options ?? {}),
@@ -232,25 +238,52 @@ export class I18NextService implements ITranslationService {
 
   //#endregion
 
+  ngOnDestroy() {
+    this.unsubscribeEvents();
+  }
+
+  private unsubscribeEvents() {
+    if (typeof this.unsubscribe === 'function') {
+      this.unsubscribe();
+    }
+  }
+
   private subscribeEvents() {
-    this.i18next.on('initialized', (options) => {
+    const initialized = (options: i18n.InitOptions) =>
       this.events.initialized.next(options);
-    });
-    this.i18next.on('loaded', (loaded) => this.events.loaded.next(loaded));
-    this.i18next.on('failedLoading', (lng, ns, msg) =>
-      this.events.failedLoading.next({ lng, ns, msg })
-    );
-    this.i18next.on('languageChanged', (lng) => {
+    const loaded = (loaded: { [language: string]: readonly string[] }) =>
+      this.events.loaded.next(loaded);
+    const failedLoading = (lng: string, ns: string, msg: string) =>
+      this.events.failedLoading.next({ lng, ns, msg });
+    const languageChanged = (lng: string) =>
       this.events.languageChanged.next(lng);
-    });
-    this.i18next.on('missingKey', (lngs, namespace, key, res) =>
-      this.events.missingKey.next({ lngs, namespace, key, res })
-    );
-    this.i18next.on('added', (lng, ns) =>
-      this.events.added.next({ lng, ns })
-    );
-    this.i18next.on('removed', (lng, ns) =>
-      this.events.removed.next({ lng, ns })
-    );
+    const missingKey = (
+      lngs: string,
+      namespace: string,
+      key: string,
+      res: string
+    ) => this.events.missingKey.next({ lngs, namespace, key, res });
+    const added = (lng: string, ns: string) =>
+      this.events.added.next({ lng, ns });
+    const removed = (lng: string, ns: string) =>
+      this.events.removed.next({ lng, ns });
+
+    this.i18next.on('initialized', initialized);
+    this.i18next.on('loaded', loaded);
+    this.i18next.on('failedLoading', failedLoading);
+    this.i18next.on('languageChanged', languageChanged);
+    this.i18next.on('missingKey', missingKey);
+    this.i18next.on('added', added);
+    this.i18next.on('removed', removed);
+
+    this.unsubscribe = () => {
+      this.i18next.off('initialized', initialized);
+      this.i18next.off('loaded', loaded);
+      this.i18next.off('failedLoading', failedLoading);
+      this.i18next.off('languageChanged', languageChanged);
+      this.i18next.off('missingKey', missingKey);
+      this.i18next.off('added', added);
+      this.i18next.off('removed', removed);
+    };
   }
 }
