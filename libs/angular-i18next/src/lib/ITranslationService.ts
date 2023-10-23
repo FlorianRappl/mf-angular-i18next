@@ -1,61 +1,54 @@
-import type {
-  InitOptions,
-  Callback,
-  Modules,
-  Module,
-  Services,
-  ResourceStore,
-  i18n,
-  TFunction,
-  Newable,
-  NewableModule,
-  FormatFunction,
-  ExistsFunction,
-} from 'i18next';
+import type * as i18n from 'i18next';
 import type { I18NextLoadResult } from './I18NextLoadResult';
 import type { ITranslationEvents } from './ITranslationEvents';
 
 type Modify<T, R> = Omit<T, keyof R> & R;
 
 export type ITranslationService = Modify<
-  Partial<i18n>,
+  Partial<i18n.i18n>,
   {
     events: ITranslationEvents;
 
     language: string;
     languages: readonly string[];
-    options: InitOptions;
-    modules: Modules;
-    services: Services;
-    store: ResourceStore;
-    resolvedLanguage: string;
+    options: i18n.InitOptions;
+    modules: i18n.Modules;
+    services: i18n.Services;
+    store: i18n.ResourceStore;
+    resolvedLanguage: string | undefined;
 
-    use<T extends Module>(
-      module: T | NewableModule<T> | Newable<T>
+    use<T extends i18n.Module>(
+      module: T | i18n.NewableModule<T> | i18n.Newable<T>
     ): ITranslationService;
 
-    init(options: InitOptions): Promise<I18NextLoadResult>;
+    init(options: i18n.InitOptions): Promise<I18NextLoadResult>;
 
-    change(instance: i18n): Promise<void>;
+    change(instance: i18n.i18n): Promise<void>;
 
-    waitLoaded(): Promise<void>;
+    t(
+      key: string | string[],
+      options?: i18n.TOptionsBase & i18n.StringMap & { defaultValue?: string }
+    ): i18n.DefaultTFuncReturn;
+    t(
+      key: string | string[],
+      defaultValue: string,
+      options?: i18n.TOptionsBase & i18n.StringMap & { defaultValue: string }
+    ): i18n.DefaultTFuncReturn;
 
-    t: TFunction;
+    format: i18n.FormatFunction;
 
-    format: FormatFunction;
-
-    exists: ExistsFunction;
+    exists: i18n.ExistsFunction;
 
     getFixedT(
       lng: string | readonly string[],
       ns?: string | readonly string[],
       keyPrefix?: string
-    ): TFunction;
+    ): i18n.TFunction;
     getFixedT(
       lng: null,
       ns: string | readonly string[] | null,
       keyPrefix?: string
-    ): TFunction;
+    ): i18n.TFunction;
 
     setDefaultNamespace(ns: string): void;
 
@@ -66,14 +59,18 @@ export type ITranslationService = Modify<
     loadNamespaces(namespaces: string[]): Promise<any>;
     loadLanguages(
       lngs: string | readonly string[],
-      callback?: Callback
+      callback?: i18n.Callback
     ): Promise<void>;
 
     loadResources(callback?: (err: any) => void): void;
 
-    getDataByLanguage(
-      lng: string
-    ): { translation: { [key: string]: string } } | undefined;
+    getDataByLanguage(lng: string):
+      | {
+          [key: string]: {
+            [key: string]: string;
+          };
+        }
+      | undefined;
 
     reloadResources(
       lngs?: string | readonly string[],
@@ -90,7 +87,7 @@ export type ITranslationService = Modify<
       lng: string,
       ns: string,
       key: string,
-      options?: Pick<InitOptions, 'keySeparator' | 'ignoreJSONStructure'>
+      options?: Pick<i18n.InitOptions, 'keySeparator' | 'ignoreJSONStructure'>
     ): any;
     addResource(
       lng: string,
@@ -98,17 +95,17 @@ export type ITranslationService = Modify<
       key: string,
       value: string,
       options?: { keySeparator?: string; silent?: boolean }
-    ): i18n;
-    addResources(lng: string, ns: string, resources: any): i18n;
+    ): i18n.i18n;
+    addResources(lng: string, ns: string, resources: any): i18n.i18n;
     addResourceBundle(
       lng: string,
       ns: string,
       resources: any,
       deep?: boolean,
       overwrite?: boolean
-    ): i18n;
+    ): i18n.i18n;
     hasResourceBundle(lng: string, ns: string): boolean;
     getResourceBundle(lng: string, ns: string): any;
-    removeResourceBundle(lng: string, ns: string): i18n;
+    removeResourceBundle(lng: string, ns: string): i18n.i18n;
   }
 >;

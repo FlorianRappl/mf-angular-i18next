@@ -1,8 +1,9 @@
+import * as i18n from 'i18next';
 import { APP_INITIALIZER, ModuleWithProviders, NgModule } from '@angular/core';
-import { FormatFunction } from 'i18next';
+import { FormatFunction, InterpolationOptions } from 'i18next';
 import { I18NextCapPipe } from './I18NextCapPipe';
 import { I18NextEagerPipe } from './I18NextEagerPipe';
-import { NativeErrorHandlingStrategy } from './I18NextErrorHandlingStrategies';
+import { I18NextErrorHandlingStrategy, NativeErrorHandlingStrategy } from './I18NextErrorHandlingStrategies';
 import { I18NextFormatPipe } from './I18NextFormatPipe';
 import { I18NextModuleParams } from './I18NextModuleParams';
 import { I18NextPipe } from './I18NextPipe';
@@ -16,6 +17,8 @@ import {
   I18NEXT_SERVICE,
 } from './I18NEXT_TOKENS';
 import { ITranslationService } from './ITranslationService';
+import { I18NEXT_INSTANCE } from './I18NEXT_TOKENS';
+
 
 export * from './I18NextCapPipe';
 export * from './I18NextEagerPipe';
@@ -29,6 +32,7 @@ export * from './I18NextTitle';
 export * from './I18NEXT_TOKENS';
 export * from './ITranslationEvents';
 export * from './ITranslationService';
+export * from './I18NextEvents';
 export * from './models';
 
 export function resolver(activatedRouteSnapshot: any): Promise<void> {
@@ -47,6 +51,7 @@ export function i18nextNamespaceResolverFactory(i18next: ITranslationService) {
 function appInit(i18next: ITranslationService): any {
   return () => i18next.waitLoaded();
 }
+const i18nextGlobal: i18n.i18n = i18n.default;
 
 @NgModule({
   providers: [
@@ -78,7 +83,10 @@ export class I18NextModule {
   ): ModuleWithProviders<I18NextModule> {
     return {
       ngModule: I18NextModule,
-      providers: [
+      providers: [{
+        provide: I18NEXT_INSTANCE,
+        useValue: i18nextGlobal,
+      },
         {
           provide: APP_INITIALIZER,
           useFactory: appInit,
@@ -87,7 +95,11 @@ export class I18NextModule {
         },
         {
           provide: I18NEXT_SERVICE,
-          useClass: I18NextService,
+          useFactory: (errHandle: I18NextErrorHandlingStrategy, i18nextInstance: i18n.i18n) => new I18NextService(errHandle, i18nextInstance),
+          deps: [
+            I18NEXT_ERROR_HANDLING_STRATEGY,
+            I18NEXT_INSTANCE
+          ]
         },
         {
           provide: I18NEXT_ERROR_HANDLING_STRATEGY,

@@ -1,31 +1,54 @@
 import { Injectable } from '@angular/core';
 import { jest } from '@jest/globals';
-import { Callback, FormatFunction, i18n, InterpolationOptions, Modules, ResourceStore, Services, TFunction } from 'i18next';
-import { I18NextLoadResult } from '../../lib/I18NextLoadResult';
-import { ITranslationEvents } from '../../lib/ITranslationEvents';
-import { ITranslationService } from '../../lib/ITranslationService';
+import * as i18next from 'i18next';
+import { Callback, FormatFunction, i18n, InterpolationOptions, TFunction } from 'i18next';
+import { defaultInterpolationFormat, I18NextEvents, I18NextLoadResult, ITranslationEvents, ITranslationService } from '../../lib';
 
 
 @Injectable()
 export class MockI18NextService implements ITranslationService {
-  isInitialized?: boolean | undefined;
-  modules: Modules;
-  services: Services;
-  store: ResourceStore;
-  resolvedLanguage: string;
-  t: TFunction =  jest.fn()
-    .mockImplementation(()=> {
-      return ((key: string | string[], options?: any): string => {
-        if (key instanceof Array) {
-          return key.length > 0 ? key[0] : '';
-        }
-        return key;
-      })
-    });
 
-  format: FormatFunction = jest.fn().mockImplementation(() => {
-    return <FormatFunction>1
-  });
+  private i18next: i18n;
+
+  get isInitialized() {
+    return this.i18next.isInitialized;
+  }
+
+  get modules() {
+    return this.i18next.modules;
+  }
+  get services() {
+    return this.i18next.services;
+  }
+  get store() {
+    return this.i18next.store;
+  }
+
+  get resolvedLanguage() {
+    return this.i18next.resolvedLanguage;
+  }
+
+  constructor(
+  ) {
+    this.i18next = i18next.default;
+  }
+
+  t = jest.fn((key: string | string[],
+    optionsOrDefault?: string | i18next.TOptions,
+    options?: i18next.TOptions): i18next.DefaultTFuncReturn => {
+    if (key instanceof Array) {
+      return key.length > 0 ? key[0] : '';
+    }
+    return key;
+})
+
+  format: FormatFunction = jest.fn((
+    value: any,
+    format?: string,
+    lng?: string,
+    options?: InterpolationOptions & { [key: string]: any },
+  ) => defaultInterpolationFormat(value, format, lng));
+
 
   getFixedT(lng: string | readonly string[], ns?: string | readonly string[], keyPrefix?: string): TFunction;
   getFixedT(lng: null, ns: string | readonly string[] | null, keyPrefix?: string): TFunction;
@@ -58,11 +81,9 @@ export class MockI18NextService implements ITranslationService {
   removeResourceBundle(lng: string, ns: string): i18n {
     throw new Error('Method not implemented.');
   }
-  events: ITranslationEvents;
+  events: ITranslationEvents = new I18NextEvents();
   language: string = '';
   languages: string[] = [];
-
-  private i18nextPromise: Promise<void>;
 
   get options(): any {
     return {

@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Inject,
+  NgZone,
   OnDestroy,
   Pipe,
   PipeTransform,
@@ -31,16 +32,17 @@ export class I18NextEagerPipe
   private ngUnsubscribe: Subject<void> = new Subject();
 
   constructor(
-    @Inject(I18NEXT_SERVICE) protected translateI18Next: ITranslationService,
-    @Inject(I18NEXT_NAMESPACE) protected ns: string | string[],
-    @Inject(I18NEXT_SCOPE) protected scope: string | string[],
-    private cd: ChangeDetectorRef
+    @Inject(I18NEXT_SERVICE) protected override translateI18Next: ITranslationService,
+    @Inject(I18NEXT_NAMESPACE) protected override ns: string | string[],
+    @Inject(I18NEXT_SCOPE) protected override scope: string | string[],
+    private cd: ChangeDetectorRef,
+    private ngZone: NgZone  
   ) {
     super(translateI18Next, ns, scope);
     translateI18Next.events.languageChanged
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        this.cd.markForCheck();
+        this.ngZone.run(() => this.cd.markForCheck());
       });
   }
   private hasKeyChanged(key: string | string[]): boolean {
@@ -51,7 +53,7 @@ export class I18NextEagerPipe
     return this.lastOptions !== options;
   }
 
-  public transform(key: string | string[], options?: PipeOptions): string {
+  public override transform(key: string | string[], options?: PipeOptions): string {
     const newKey = this.translateI18Next.language + '|' + JSON.stringify(key);
 
     if (this.hasKeyChanged(newKey) || this.hasOptionsChanged(options)) {

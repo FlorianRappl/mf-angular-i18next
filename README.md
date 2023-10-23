@@ -39,7 +39,7 @@ One use case for this fork is to apply translations via `i18next` to microfronte
 # angular-i18next
 [i18next](http://i18next.com/) v8.4+ integration with [angular](https://angular.io/) v2.0+
 
-[Live DEMO](https://romanchuk.github.io/angular-i18next-demo/)
+[Live DEMO](https://romanchuk.github.io/angular-i18next/)
 
  - [Features](#features)
  - [Installation](#installation)
@@ -425,6 +425,23 @@ const appRoutes: Routes = [
 ];
 ```
 
+# What to do if... ?
+
+## New angular version released, but angular-i18next is not released YET!!!
+
+Angular releases mostly don't break angular-i18next, but we cannot tell ahead that current version of `angular-i18next` will work correctly with latest angular version.
+
+You can override an angular-i18next `peerDependencies` in your `package.json` on your **own risk**:
+
+```json
+"overrides": {
+  "angular-i18next": {
+    "@angular/common": "*",
+    "@angular/core": "*",
+    "@angular/platform-browser": "*"
+  }
+}
+```
 
 # Deep integration
 

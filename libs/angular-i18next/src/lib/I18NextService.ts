@@ -1,6 +1,5 @@
 import { Inject, Injectable, Optional, OnDestroy } from '@angular/core';
 import * as i18n from 'i18next';
-
 import {
   I18NEXT_ERROR_HANDLING_STRATEGY,
   I18NEXT_INSTANCE,
@@ -11,10 +10,12 @@ import { I18NextLoadResult } from './I18NextLoadResult';
 import { ITranslationEvents } from './ITranslationEvents';
 import { ITranslationService } from './ITranslationService';
 
+const i18nextGlobal: i18n.i18n = i18n.default;
+
 @Injectable()
 export class I18NextService implements ITranslationService, OnDestroy {
   private i18next: i18n.i18n;
-  private unsubscribe: () => void;
+  private unsubscribe: () => void = () => {};
 
   events: ITranslationEvents = new I18NextEvents();
 
@@ -52,7 +53,7 @@ export class I18NextService implements ITranslationService, OnDestroy {
     private errorHandlingStrategy: I18NextErrorHandlingStrategy,
     @Optional() @Inject(I18NEXT_INSTANCE) private instance: i18n.i18n
   ) {
-    this.i18next = instance ?? i18n.default;
+    this.i18next = instance ?? i18nextGlobal;
   }
 
   public change(instance: i18n.i18n) {

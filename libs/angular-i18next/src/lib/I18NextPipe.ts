@@ -4,7 +4,7 @@ import type { InitOptions } from 'i18next';
 import {
   I18NEXT_NAMESPACE,
   I18NEXT_SCOPE,
-  I18NEXT_SERVICE,
+  I18NEXT_SERVICE
 } from './I18NEXT_TOKENS';
 import { ITranslationService } from './ITranslationService';
 import { PipeOptions } from './models';
@@ -23,6 +23,7 @@ export class I18NextPipe implements PipeTransform {
     options = this.prepareOptions(options);
 
     let i18nOpts: InitOptions = this.translateI18Next.options;
+
     if (options.prependScope === undefined || options.prependScope === true) {
       if (this.scope) {
         key = this.prependScope(
@@ -42,7 +43,7 @@ export class I18NextPipe implements PipeTransform {
       }
     }
 
-    let result: string = this.translateI18Next.t(key, options);
+    let result = this.translateI18Next.t(key, options);
 
     if (options.format) {
       if (result) {
@@ -53,7 +54,7 @@ export class I18NextPipe implements PipeTransform {
         );
       }
     }
-    return result;
+    return result ?? '';
   }
 
   private prependScope(
@@ -116,7 +117,7 @@ export class I18NextPipe implements PipeTransform {
     return key.indexOf(nsSeparator) !== -1;
   }
 
-  private prepareOptions(options?: PipeOptions) {
+  private prepareOptions(options?: PipeOptions): PipeOptions {
     options = options || {};
     if (options.context != null) options.context = options.context.toString();
     return options;
