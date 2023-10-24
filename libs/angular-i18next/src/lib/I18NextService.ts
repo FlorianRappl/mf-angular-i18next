@@ -63,7 +63,7 @@ export class I18NextService implements ITranslationService, OnDestroy {
     return this.waitLoaded();
   }
 
-  public waitLoaded(): Promise<void> {
+  public waitLoaded() {
     this.subscribeEvents();
 
     if (this.instance && !this.instance.isInitialized) {
@@ -91,17 +91,37 @@ export class I18NextService implements ITranslationService, OnDestroy {
 
   t(
     key: string | string[],
-    optionsOrDefault?: string | i18n.TOptions,
-    options?: i18n.TOptions
-  ): i18n.TFunctionResult {
-    const hasDefault = optionsOrDefault && typeof optionsOrDefault === 'string';
+    options?:
+      | (i18n.TOptionsBase &
+          i18n.StringMap & { defaultValue?: string | undefined })
+      | undefined
+  ): i18n.DefaultTFuncReturn;
+  t(
+    key: string | string[] | (string | TemplateStringsArray)[],
+    defaultValue: string,
+    options?:
+      | (i18n.TOptionsBase & i18n.StringMap & { defaultValue: string })
+      | undefined
+  ): i18n.DefaultTFuncReturn;
+  t(
+    key: unknown,
+    defaultValueOrOptions?: unknown,
+    options?: unknown
+  ): i18n.DefaultTFuncReturn {
+    const hasDefault =
+      !!defaultValueOrOptions && typeof defaultValueOrOptions === 'string';
+
+    this.i18next.t.bind(this.i18next);
     if (hasDefault) {
-      return this.i18next.t(key, optionsOrDefault, options);
+      return this.i18next.t(
+        key as string | string[],
+        defaultValueOrOptions as string,
+        options as i18n.TOptionsBase
+      );
     } else {
       return this.i18next.t(
-        key,
-        <string | undefined>optionsOrDefault,
-        undefined
+        key as string | string[],
+        defaultValueOrOptions as i18n.TOptionsBase
       );
     }
   }
@@ -187,9 +207,8 @@ export class I18NextService implements ITranslationService, OnDestroy {
   public loadResources(callback?: (err: any) => void): void {
     this.i18next.loadResources(callback);
   }
-  public getDataByLanguage(
-    lng: string
-  ): { translation: { [key: string]: string } } | undefined {
+
+  public getDataByLanguage(lng: string) {
     return this.i18next.getDataByLanguage(lng);
   }
 
@@ -252,7 +271,7 @@ export class I18NextService implements ITranslationService, OnDestroy {
   private subscribeEvents() {
     const initialized = (options: i18n.InitOptions) =>
       this.events.initialized.next(options);
-    const loaded = (loaded: { [language: string]: readonly string[] }) =>
+    const loaded = (loaded: boolean) =>
       this.events.loaded.next(loaded);
     const failedLoading = (lng: string, ns: string, msg: string) =>
       this.events.failedLoading.next({ lng, ns, msg });

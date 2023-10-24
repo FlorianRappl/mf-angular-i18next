@@ -107,5 +107,6 @@ export type ITranslationService = Modify<
     hasResourceBundle(lng: string, ns: string): boolean;
     getResourceBundle(lng: string, ns: string): any;
     removeResourceBundle(lng: string, ns: string): i18n.i18n;
+    waitLoaded(): Promise<void>;
   }
 >;
