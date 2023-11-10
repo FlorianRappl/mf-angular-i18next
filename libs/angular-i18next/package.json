@@ -1,6 +1,6 @@
 {
   "name": "mf-angular-i18next",
-  "version": "16.0.0",
+  "version": "16.0.1",
   "publishConfig": {
     "access": "public"
   },
@@ -46,7 +46,7 @@
     "@angular/common": ">=16.0.0 <17.0.0",
     "@angular/core": ">=16.0.0 <17.0.0",
     "@angular/platform-browser": ">=16.0.0 <17.0.0",
-    "i18next": ">=22.0.8 <23.0.0",
+    "i18next": ">=22.0.8 <24.0.0",
     "rxjs": ">=6.6.0 <8.0.0"
   },
   "devDependencies": {
